@@ -1,0 +1,28 @@
+
+  <view>
+    <form bindsubmit="addTodo">
+      <view class="header">
+        <view class="logo">MyTodoLogo</view>
+        <view class="iptWrap">
+          <input type="text" name="addTodo" placeholder="添加任务项" bindconfirm="addTodo"/>
+        </view>
+        <button class="btn" size="mini" form-type="submit" hover-class="button-hover">添加</button>
+      </view>
+    </form>
+    <scroll-view class="content" scroll-y>
+      <view class="todoList">
+        <block wx:for="{{todoList}}" wx:for-index="index" wx:for-item="item" wx:key="index">
+          <view class="todoItem {{item.isComplete ? 'todoComplete' : ''}}"  wx:if="{{itemActive === 0 || itemActive === 1 && !item.isComplete || itemActive === 2 && item.isComplete}}">
+            <checkbox value="" checked="{{item.isComplete}}" color="#666" bindtap="changeTodo" data-wpychangetodo-a="{{item.id}}" data-wpychangetodo-b="select"/>
+            <input value="{{item.todo}}" type="text" bindchange="changeTodo" data-wpychangetodo-a="{{item.id}}" data-wpychangetodo-b="ipt"/>
+            <icon type="clear" size="20" color="#666" bindtap="delTodo" data-wpydeltodo-a="{{item.id}}"/>
+          </view>
+        </block>
+      </view>
+    </scroll-view>
+    <view class="tabList">
+      <view class="item {{itemActive == 0 ? 'itemActive':''}}" bindtap="todoTab" data-wpytodotab-a="0">全部</view>
+      <view class="item {{itemActive == 1 ? 'itemActive':''}}" bindtap="todoTab" data-wpytodotab-a="1">未完成</view>
+      <view class="item {{itemActive == 2 ? 'itemActive':''}}" bindtap="todoTab" data-wpytodotab-a="2">已完成</view>
+    </view>
+  </view>

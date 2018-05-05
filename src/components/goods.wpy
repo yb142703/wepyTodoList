@@ -1,0 +1,47 @@
+<template>
+  <view>
+    <view class="name">
+      {{goods.name}}
+    </view>
+    <view>{{goods.price}}</view>
+    <view class="czWrap">
+      <button size="mini" @tap="jia()">加</button>
+      <view class="num">{{goods.num}}</view>
+      <button size="mini" @tap="del()">减</button>
+    </view>
+  </view>
+</template>
+<style lang="stylus">
+.price {
+  font-size: 26rpx;
+  color: pink;
+  text-align: center;
+}
+
+.czWrap {
+  display: flex;
+}
+</style>
+<script>
+import wepy from 'wepy'
+export default class Goods extends wepy.component {
+  props = {
+    goods: {
+      type: Object,
+      default: 'null',
+    }
+  }
+  onLoad() {
+    console.log(this.goods)
+  }
+  methods = {
+    jia() {
+      this.goods.num++
+      console.log(this.$parent.cartList)
+    },
+    del() {
+      this.goods.num--
+    }
+  }
+}
+</script>

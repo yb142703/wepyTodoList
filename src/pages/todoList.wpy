@@ -1,0 +1,196 @@
+<style lang="stylus">
+.header
+  position fixed
+  z-index 100
+  left 0
+  top 0
+  width 100%
+  box-sizing border-box
+  display flex
+  justify-content space-between
+  align-items center
+  padding 0 20rpx
+  background #333
+ .logo
+    width: 200rpx;
+    line-height: 100rpx
+    text-align center
+    color: #fff
+    font-size 30rpx
+  .iptWrap
+    padding 0 20rpx
+    background #fff
+    border-radius 4px
+    font-size 28rpx
+  .btn[size=mini]
+    margin 0
+
+.content
+  position fixed 
+  left 0
+  top 100rpx
+  bottom 80rpx
+  right 0
+  background #cdcdcd
+  .todoList
+    min-height 100%
+    padding: 0 20rpx
+    .todoItem
+      margin 20rpx 0
+      height 62rpx
+      padding: 0 20rpx
+      display flex
+      align-items center
+      justify-content space-between
+      border-left: 4px solid #629a9c
+      border-radius 4px
+      background #fff;
+      input
+        font-size 24rpx
+    .todoComplete
+      background #999
+
+.tabList
+  position fixed
+  width: 100%
+  left 0
+  bottom 0
+  display flex
+  border-top 1px solid #666
+  .item
+    width:33.3333%
+    text-align center 
+    line-height 80rpx
+    color #666
+    font-size 24rpx
+  .item:nth-child(2){
+    box-sizing border-box
+    border: 1px solid #666
+    border-top 0
+    border-bottom 0
+  }
+  .itemActive
+    color: red
+  
+</style>
+
+<template>
+  <view>
+    <form bindsubmit="addTodo">
+      <view class="header">
+        <view class="logo">MyTodoLogo</view>
+        <view class="iptWrap">
+          <input type="text" name="addTodo" placeholder="添加任务项" bindconfirm="addTodo"></input>
+        </view>
+        <button class="btn" size="mini" form-type="submit" hover-class="button-hover">添加</button>
+      </view>
+    </form>
+    <scroll-view  class="content" scroll-y>
+      <view class="todoList">
+        <repeat for="{{todoList}}" key="index" index="index" item="item">
+          <view class="todoItem {{item.isComplete ? 'todoComplete' : ''}}" wx:if="{{itemActive === 0 || itemActive === 1 && !item.isComplete || itemActive === 2 && item.isComplete}}">
+            <checkbox value="" checked="{{item.isComplete}}" color="#666" @tap="changeTodo({{item.id}}, 'select')"></checkbox>
+            <input value="{{item.todo}}" type="text" @change="changeTodo({{item.id}}, 'ipt')"></input>
+            <icon type="clear" size="20" color="#666" @tap="delTodo({{item.id}})"></icon>
+          </view>
+        </repeat>
+      </view>
+    </scroll-view>
+    <view class="tabList">
+      <view class="item {{itemActive == 0 ? 'itemActive':''}}" @tap="todoTab(0)">全部</view>
+      <view class="item {{itemActive == 1 ? 'itemActive':''}}" @tap="todoTab(1)">未完成</view>
+      <view class="item {{itemActive == 2 ? 'itemActive':''}}" @tap="todoTab(2)">已完成</view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class TodoList extends wepy.page {
+  config = {
+    navigationBarTitleText: 'My todoList'
+  }
+  components = {}
+  data = {
+    itemActive: 0,
+    todoList: []
+  }
+  methods = {
+    addTodo: function(e) {
+      var todoText = e.type === 'submit' ? e.detail.value.addTodo : e.detail.value
+      console.log(todoText)
+      if(todoText == ''){
+        wepy.showToast({
+          title: '不能为空',
+          icon:'success_no_circle',//图标
+          duration:800,//延迟时间
+          mask:true
+        })
+      }
+      var todoItem = {
+        id: this.todoList.length,
+        isComplete: false,
+        todo: todoText
+      }
+      console.log(this.todoList)
+      this.todoList.push(todoItem)
+      this.addLocalTodo(todoItem)
+    },
+    changeTodo (todoId, type,e){
+      console.log(type)
+      for(var i = 0; i< this.todoList.length;i++){
+        var todoItem = this.todoList[i]
+        if(todoItem.id === todoId){
+          if(type === 'select'){
+            todoItem.isComplete = !todoItem.isComplete
+          }
+          if(type === 'ipt'){
+            todoItem.todo = e.detail.value
+          }
+          this.addLocalTodo(todoItem)
+          return
+        }
+      }
+    },
+    delTodo(todoId) {
+      this.removeLocalTodo(todoId)
+    },
+    todoTab(idx){
+      console.log(idx)
+      this.itemActive = parseInt(idx);
+    }
+  }
+  onLoad() {
+    this.todoList = wepy.getStorageSync('localTodoList') || []
+    this.$apply()
+  }
+  removeLocalTodo (todoId){
+    var localTodoList = wepy.getStorageSync('localTodoList') || []
+      for(let i = 0; i < localTodoList.length; i++){
+        if(localTodoList[i].id === todoId){
+          localTodoList.splice(i, 1)
+          this.todoList = localTodoList
+          this.$apply()
+          wepy.setStorageSync('localTodoList',localTodoList)
+          return
+        }
+      }
+  }
+  addLocalTodo(todoItem) {
+    var localTodoList = wepy.getStorageSync('localTodoList') || []
+    for(let i = 0; i < localTodoList.length; i++){
+      if(localTodoList[i].id === todoItem.id){
+        localTodoList[i].isComplete = todoItem.isComplete
+        localTodoList[i].todo = todoItem.todo
+        console.log(localTodoList)
+        wepy.setStorageSync('localTodoList',localTodoList)
+        return
+      }
+    }
+    localTodoList.push(todoItem)
+    wepy.setStorageSync('localTodoList',localTodoList)
+  }
+}
+</script>
+
+

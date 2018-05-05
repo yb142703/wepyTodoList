@@ -1,0 +1,125 @@
+<style lang="stylus">
+.btn {
+  width: 100rpx;
+  heigth: 20rpx;
+  background: red;
+}
+
+.todoList {
+  width: 100rpx;
+  height: 50rpx;
+  text-align: center;
+  line-height: 50rpx;
+  background #cccccc;
+  font-size 28rpx;
+  color #fff
+}
+</style>
+
+<template>
+  <view>
+    <view>
+    </view>
+    <view class="goodsWrap">
+
+      <repeat class="goodsItem" for="{{cartList}}" key="index" index="index" item="item">
+        <goodsItem :goods.sync="item"></goodsItem>
+      </repeat>
+    </view>
+    <button @tap="tapV">计算总价格</button>
+    <view>{{priceTotal}}</view>
+
+    <title :title='title' :syncTitle.sync='title' :twoTitle.sync='title'></title>
+
+    <navigator class="todoList" url="/pages/todoList" hover-class="navigator-hover" open-type="navigate">todoList</navigator>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import goods from '../components/goods'
+import title from '../components/title'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: 'test'
+  }
+  components = {
+    goodsItem: goods,
+    title,
+    title1:title
+  }
+  data = {
+    title: '父传子标题',
+    priceTotal: 0,
+    cartList: [
+      {
+        id: 2,
+        name: '桂圆干2',
+        num: 0,
+        price: 30,
+        oldPrice: 18
+      },
+      {
+        id: 3,
+        name: '桂圆干3',
+        num: 10,
+        price: 8.88,
+        oldPrice: 18
+      }
+    ]
+  }
+
+  methods = {
+    tagTitel() {
+      this.title = '修改了标题啊啊'
+    },
+    jia(id) {
+      // var id = event.currentTarget.dataset.id
+      var goodsList = this.cartList
+      for (let i = 0; i < goodsList.length; i++) {
+        if (goodsList[i].id === id) {
+          goodsList[i].num++
+          this.cartList = goodsList
+          return
+        }
+      }
+    },
+    tapV() {
+      var total = 0
+      var goodsList = this.cartList
+      for (let i = 0; i < goodsList.length; i++) {
+        total += goodsList[i].num * goodsList[i].price
+      }
+      this.priceTotal = total
+    },
+    del(id) {
+      // var id = event.currentTarget.dataset.id
+      var goodsList = this.cartList
+      for (let i = 0; i < goodsList.length; i++) {
+        if (goodsList[i].id === id) {
+          if (goodsList[i].num > 0) {
+            goodsList[i].num--
+            this.cartList = goodsList
+            return
+          } else {
+            wepy.showModal({
+              content: '是否删除该商品',
+              success: function(res) {
+                if (res.confirm) {
+                  console.log('用户点击确定')
+                } else if (res.cancel) {
+                  console.log('用户点击取消')
+                }
+              }
+            })
+          }
+        }
+      }
+    }
+  }
+  onLoad() {
+    console.log('onLoad')
+  }
+}
+</script>

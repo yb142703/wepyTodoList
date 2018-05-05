@@ -1,0 +1,3 @@
+@import "./../components/title.wxss";
+@import "./../components/goods.wxss";
+.btn{width:100rpx;heigth:20rpx;background:#f00}.todoList{width:100rpx;height:50rpx;text-align:center;line-height:50rpx;background:#ccc;font-size:28rpx;color:#fff}

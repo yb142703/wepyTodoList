@@ -1,0 +1,52 @@
+<template>
+  <div>
+    <!-- <div>{{title}}</div> -->
+    <button @tap="btn">按钮啊</button>
+  </div>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Title extends wepy.component {
+  config = {}
+  props = {
+    title: String,
+    syncTitle: {
+      type: String,
+      default: null
+    },
+    twoTitle: {
+      type: String,
+      default: null,
+      twoWay: true
+    }
+  }
+  methods = {
+    btn() {
+      console.log(this.title)
+      console.log(this.syncTitle)
+      console.log(this.twoTitle)
+
+      this.title = 'Zi-Title'
+      console.log(this.$parent.title)
+      this.synTitle = '子组件修改了标题'
+      console.log(this.$parent.title)
+       console.log(this.synTitle)
+      this.twoTitle = '双向修改了标题'
+      this.$apply()
+      console.log(this.twoTitle)
+      console.log(this.$parent.title)
+
+      this.$parent.title = '通过子组件事件改编标题'
+      this.$parent.$apply()
+      console.log(this.title)
+      console.log(this.twoTitle)
+      console.log(this.synTitle)
+    }
+  }
+  onLoad() {}
+}
+</script>
+
+<style lang="stylus">
+</style>
