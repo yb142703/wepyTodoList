@@ -97,9 +97,9 @@
       </view>
     </scroll-view>
     <view class="tabList">
-      <view class="item {{itemActive == 0 ? 'itemActive':''}}" @tap="todoTab(0)">全部</view>
-      <view class="item {{itemActive == 1 ? 'itemActive':''}}" @tap="todoTab(1)">未完成</view>
-      <view class="item {{itemActive == 2 ? 'itemActive':''}}" @tap="todoTab(2)">已完成</view>
+      <view class="item {{itemActive == 0 ? 'itemActive':''}}" @tap="todoTab(0)">全部({{todoList.length}})</view>
+      <view class="item {{itemActive == 1 ? 'itemActive':''}}" @tap="todoTab(1)">未完成({{todoList.length - completedNum}})</view>
+      <view class="item {{itemActive == 2 ? 'itemActive':''}}" @tap="todoTab(2)">已完成({{completedNum}})</view>
     </view>
   </view>
 </template>
@@ -113,7 +113,23 @@ export default class TodoList extends wepy.page {
   components = {}
   data = {
     itemActive: 0,
-    todoList: []
+    todoList: [],
+    completedNum: 0
+  }
+  computed = {
+
+  }
+  watch = {
+    todoList (newValue, oldValue) {
+      let num = 0;
+      for (let i = 0; i < newValue.length; i++) {
+        const element = newValue[i];
+        if(element.isComplete){
+          num += 1
+        }
+      }
+      this.completedNum = num
+    }
   }
   methods = {
     addTodo: function(e) {
@@ -176,6 +192,7 @@ export default class TodoList extends wepy.page {
         }
       }
   }
+  
   addLocalTodo(todoItem) {
     var localTodoList = wepy.getStorageSync('localTodoList') || []
     for(let i = 0; i < localTodoList.length; i++){
